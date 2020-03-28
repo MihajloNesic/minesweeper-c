@@ -212,9 +212,27 @@ void open_all(minefield* field) {
 	int i, j;
 	for (i = 0; i < field->rows; i++) {
 		for (j = 0; j < field->cols; j++) {
-			open_cell(field, i, j);
+            int index = get_index(field, i, j);
+            field->cells[index].is_open = 1;
 		}
 	}
+}
+
+/**
+ * Opens all mine cells.
+ *
+ * @param field Minefiled board
+ */
+void open_all_mines(minefield* field) {
+    int i, j;
+    for (i = 0; i < field->rows; i++) {
+        for (j = 0; j < field->cols; j++) {
+            int index = get_index(field, i, j);
+            if(field->cells[index].is_mine == 1) {
+                field->cells[index].is_open = 1;
+            }
+        }
+    }
 }
 
 /**

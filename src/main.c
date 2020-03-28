@@ -47,15 +47,16 @@ START:
 	goto START;
 
 END:
-	open_all(field);
-	print_field(field);
-
-	if (is_win == 1) {
-		printf("you win! :)");
-	}
-	else {
-		printf("game over :(");
-	}
+    if (is_win == 1) {
+        open_all(field);
+        print_field(field);
+        printf("you win! :)");
+    }
+    else {
+        open_all_mines(field);
+        print_field(field);
+        printf("game over :(");
+    }
 
 	free(field);
 
