@@ -3,18 +3,18 @@
 #include <time.h>
 #include "functions.h"
 
-#define RESET "\033[0m"
-#define F_GRAY "\033[1;30m"
-#define B_GRAY "\033[1;30;47m"
-#define F_BLUE "\033[0;34m"
-#define F_GREEN "\033[0;32m"
-#define F_RED "\033[1;31m"
-#define F_D_BLUE "\033[1;34m"
-#define F_PINK "\033[0;35m"
-#define F_CYAN "\033[0;36m"
-#define F_L_GRAY "\033[0;37m"
-#define F_YELLOW "\033[0;33m"
-#define B_RED_F_BLACK "\033[0;30;41m"
+#define RESET           "\033[0m"
+#define F_GRAY          "\033[1;30m"
+#define B_GRAY          "\033[1;30;47m"
+#define F_BLUE          "\033[0;34m"
+#define F_GREEN         "\033[0;32m"
+#define F_RED           "\033[1;31m"
+#define F_D_BLUE        "\033[1;34m"
+#define F_PINK          "\033[0;35m"
+#define F_CYAN          "\033[0;36m"
+#define F_L_GRAY        "\033[0;37m"
+#define F_YELLOW        "\033[0;33m"
+#define B_RED_F_BLACK   "\033[0;30;41m"
 
 /**
  * Initializes the minefield board.
@@ -104,16 +104,12 @@ void print_cell(cell cell) {
 	if (cell.is_open == 1) {
 		// if the cell is a mine
 		if (cell.is_mine == 1) {
-			printf(B_RED_F_BLACK);
-			printf(" O ");
-			printf(RESET);
+			printf(B_RED_F_BLACK " O " RESET);
 			return;
 		}
 		// if the cell is a zero
 		if (cell.neig_mines == 0) {
-			printf(F_GRAY);
-			printf(" - ");
-			printf(RESET);
+			printf(F_GRAY " - " RESET);
 			return;
 		}
 
@@ -146,16 +142,13 @@ void print_cell(cell cell) {
 		}
 
 		// if the cell is a number
-		printf(" %d ", cell.neig_mines);
-		printf(RESET);
+		printf(" %d " RESET, cell.neig_mines);
 
 		return;
 	}
 
 	// if the cell is not opened
-	printf(B_GRAY);
-	printf(" D ");
-	printf(RESET);
+	printf(B_GRAY " D " RESET);
 }
 
 /**
@@ -299,30 +292,4 @@ int neighbour_mines(minefield* field, int x, int y) {
 	}
 
 	return mines;
-}
-
-/**
- * Returns a number of neighbour zeros.
- *
- * @param field Minefiled board
- * @param x The x position (from 0)
- * @param y The y position (from 0)
- * @return number of neighbour zeros
- */
-int neighbour_zeros(minefield* field, int x, int y) {
-	int i, j, zeros = 0;
-	int index = get_index(field, x, y);
-
-	for (i = x - 1; i <= x + 1; i++) {
-		for (j = y - 1; j <= y + 1; j++) {
-			int neig_index = get_index(field, i, j);
-			if (neig_index != -1 && neig_index != index) {
-				if (field->cells[neig_index].neig_mines == 0) {
-					zeros++;
-				}
-			}
-		}
-	}
-
-	return zeros;
 }
