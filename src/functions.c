@@ -1,21 +1,20 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include <Windows.h>
 #include "functions.h"
 
-#define RESET 15
-#define F_GRAY 8
-#define B_GRAY 120
-#define F_BLUE 9
-#define F_GREEN 10
-#define F_RED 12
-#define F_D_BLUE 3
-#define F_PINK 13
-#define F_CYAN 11
-#define F_L_GRAY 7
-#define F_YELLOW 14
-#define B_RED_F_BLACK 64
+#define RESET "\033[0m"
+#define F_GRAY "\033[1;30m"
+#define B_GRAY "\033[1;30;47m"
+#define F_BLUE "\033[0;34m"
+#define F_GREEN "\033[0;32m"
+#define F_RED "\033[1;31m"
+#define F_D_BLUE "\033[1;34m"
+#define F_PINK "\033[0;35m"
+#define F_CYAN "\033[0;36m"
+#define F_L_GRAY "\033[0;37m"
+#define F_YELLOW "\033[0;33m"
+#define B_RED_F_BLACK "\033[0;30;41m"
 
 /**
  * Initializes the minefield board.
@@ -71,16 +70,16 @@ void print_field(minefield* field) {
 	// print top header
 	for (i = 0; i < field->cols; i++) {
 		if (i == 0) {
-			printf("  \t  %d ", i);
+			printf("y \t  %d ", i);
 		}
-		else if(i<10) { 
-			printf(" %d ", i); 
+		else if(i<10) {
+			printf(" %d ", i);
 		}
 		else {
 			printf("%d ", i);
 		}
 	}
-	printf("\n\n");
+	printf("\nx\n\n");
 
 	for (i = 0; i < field->rows; i++) {
 		for (j = 0; j < field->cols; j++) {
@@ -105,58 +104,58 @@ void print_cell(cell cell) {
 	if (cell.is_open == 1) {
 		// if the cell is a mine
 		if (cell.is_mine == 1) {
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), B_RED_F_BLACK);
+			printf(B_RED_F_BLACK);
 			printf(" O ");
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RESET);
+			printf(RESET);
 			return;
 		}
 		// if the cell is a zero
 		if (cell.neig_mines == 0) {
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_GRAY);
+			printf(F_GRAY);
 			printf(" - ");
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RESET);
+			printf(RESET);
 			return;
 		}
 
 		// get cell number color
 		switch (cell.neig_mines) {
-		case 1:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_BLUE);
-			break;
-		case 2:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_GREEN);
-			break;
-		case 3:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_RED);
-			break;
-		case 4:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_D_BLUE);
-			break;
-		case 5:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_PINK);
-			break;
-		case 6:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_CYAN);
-			break;
-		case 7:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_YELLOW);
-			break;
-		case 8:
-			SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), F_L_GRAY);
-			break;
+			case 1:
+				printf(F_BLUE);
+				break;
+			case 2:
+				printf(F_GREEN);
+				break;
+			case 3:
+				printf(F_RED);
+				break;
+			case 4:
+				printf(F_D_BLUE);
+				break;
+			case 5:
+				printf(F_PINK);
+				break;
+			case 6:
+				printf(F_CYAN);
+				break;
+			case 7:
+				printf(F_YELLOW);
+				break;
+			case 8:
+				printf(F_L_GRAY);
+				break;
 		}
 
 		// if the cell is a number
 		printf(" %d ", cell.neig_mines);
-		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RESET);
+		printf(RESET);
 
 		return;
 	}
 
 	// if the cell is not opened
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), B_GRAY);
+	printf(B_GRAY);
 	printf(" D ");
-	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), RESET);
+	printf(RESET);
 }
 
 /**
@@ -212,8 +211,8 @@ void open_all(minefield* field) {
 	int i, j;
 	for (i = 0; i < field->rows; i++) {
 		for (j = 0; j < field->cols; j++) {
-            int index = get_index(field, i, j);
-            field->cells[index].is_open = 1;
+			int index = get_index(field, i, j);
+			field->cells[index].is_open = 1;
 		}
 	}
 }
@@ -224,15 +223,15 @@ void open_all(minefield* field) {
  * @param field Minefiled board
  */
 void open_all_mines(minefield* field) {
-    int i, j;
-    for (i = 0; i < field->rows; i++) {
-        for (j = 0; j < field->cols; j++) {
-            int index = get_index(field, i, j);
-            if(field->cells[index].is_mine == 1) {
-                field->cells[index].is_open = 1;
-            }
-        }
-    }
+	int i, j;
+	for (i = 0; i < field->rows; i++) {
+		for (j = 0; j < field->cols; j++) {
+			int index = get_index(field, i, j);
+			if(field->cells[index].is_mine == 1) {
+				field->cells[index].is_open = 1;
+			}
+		}
+	}
 }
 
 /**
