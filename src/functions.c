@@ -15,6 +15,7 @@
 #define F_L_GRAY        "\033[0;37m"
 #define F_YELLOW        "\033[0;33m"
 #define B_RED_F_BLACK   "\033[0;30;41m"
+#define B_YELL_F_BLACK	"\033[7;49;33m"
 
 /**
  * Initializes the minefield board.
@@ -44,6 +45,7 @@ minefield* create_field(int rows, int cols, int mine_probability) {
 			field->cells[index].neig_mines = 0;
 			field->cells[index].is_mine = is_mine;
 			field->cells[index].is_open = 0;
+			field->cells[index].is_flag = 0;
 		}
 	}
 
@@ -101,6 +103,11 @@ void print_field(minefield* field) {
  * @param cell The cell to print
  */
 void print_cell(cell cell) {
+	// if the cell is flagged
+	if (cell.is_flag == 1) {
+		printf(B_YELL_F_BLACK " F " RESET);
+		return;
+	}
 	if (cell.is_open == 1) {
 		// if the cell is a mine
 		if (cell.is_mine == 1) {
@@ -152,8 +159,27 @@ void print_cell(cell cell) {
 }
 
 /**
+ * Interact with the cell depending on mode.
+ *
+ * @param field Minefiled board
+ * @param x The x position (from 0)
+ * @param y The y position (from 0)
+ * @param mode Interaction mode; o - open; f - flag
+ * @return 1 - if the cell is a mine; 0 - if the cell is not a mine or the cell is flagged
+ */
+int inter_cell(minefield* field, int x, int y, char mode) {
+	if (mode == 'o' || mode == 'O') {
+		return open_cell(field, x, y);
+	}
+	else if (mode == 'f' || mode == 'F') {
+		flag_cell(field, x, y);
+	}
+	return 0;
+}
+
+/**
  * Opens the cell at (x, y).
- * If the cell is 0, it will open all neighbour zeros (in a 'plus').
+ * If the cell is 0, it will open all neighbour zeros.
  *
  * @param field Minefiled board
  * @param x The x position (from 0)
@@ -162,6 +188,11 @@ void print_cell(cell cell) {
  */
 int open_cell(minefield* field, int x, int y) {
 	int index = get_index(field, x, y);
+
+	if (field->cells[index].is_flag == 1) {
+		return 0;
+	}
+
 	field->cells[index].is_open = 1;
 	// if cell is 0, open neighbour cells
 	if (field->cells[index].neig_mines == 0) {
@@ -171,10 +202,33 @@ int open_cell(minefield* field, int x, int y) {
 }
 
 /**
+ * Toggles flag on cell at (x, y).
+ * The player cannot toggle flag if the cell is open.
+ *
+ * @param field Minefiled board
+ * @param x The x position (from 0)
+ * @param y The y position (from 0)
+ */
+void flag_cell(minefield* field, int x, int y) {
+	int index = get_index(field, x, y);
+
+	if (field->cells[index].is_open == 1) {
+		return;
+	}
+
+	if (field->cells[index].is_flag == 1) {
+		field->cells[index].is_flag = 0;
+	}
+	else {
+		field->cells[index].is_flag = 1;
+	}
+}
+
+/**
  * Opens all neighbour zeros from (x, y).
  * If the cell is not 0, it will open it as well.
  * Recursive.
- * 
+ *
  * @param field Minefiled board
  * @param x The x position (from 0)
  * @param y The y position (from 0)
@@ -187,7 +241,7 @@ void open_zeros(minefield* field, int x, int y) {
 		for (j = y - 1; j <= y + 1; j++) {
 			int neig_index = get_index(field, i, j);
 			if (neig_index != -1 && neig_index != index) {
-				if (field->cells[neig_index].is_open == 0) {
+				if (field->cells[neig_index].is_open == 0 && field->cells[neig_index].is_flag == 0) {
 					open_cell(field, i, j);
 				}
 			}
@@ -205,6 +259,7 @@ void open_all(minefield* field) {
 	for (i = 0; i < field->rows; i++) {
 		for (j = 0; j < field->cols; j++) {
 			int index = get_index(field, i, j);
+			field->cells[index].is_flag = 0;
 			field->cells[index].is_open = 1;
 		}
 	}
@@ -221,6 +276,7 @@ void open_all_mines(minefield* field) {
 		for (j = 0; j < field->cols; j++) {
 			int index = get_index(field, i, j);
 			if(field->cells[index].is_mine == 1) {
+				field->cells[index].is_flag = 0;
 				field->cells[index].is_open = 1;
 			}
 		}

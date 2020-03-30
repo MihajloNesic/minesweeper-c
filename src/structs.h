@@ -7,6 +7,7 @@ typedef struct cell {
 	int is_mine;
 	int neig_mines;
 	int is_open;
+	int is_flag;
 } cell;
 
 typedef struct minefield {

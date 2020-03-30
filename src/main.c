@@ -23,6 +23,7 @@ void clear() {
 int main() {
 	int f_row, f_col, f_mine;
 	int c_row, c_col;
+	char c_mode;
 	int game_over = 0, is_win = 0;
 	char again;
 
@@ -62,10 +63,10 @@ BEGINNING:
 
 START:
 	print_field(field);
-	printf("x y> ");
-	scanf("%d %d", &c_row, &c_col);
+	printf("x y mode(o/f)> ");
+	scanf("%d %d %c", &c_row, &c_col, &c_mode);
 
-	game_over = open_cell(field, c_row, c_col);
+	game_over = inter_cell(field, c_row, c_col, c_mode);
 	is_win = check_win(field);
 
 	clear();
