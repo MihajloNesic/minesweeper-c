@@ -2,6 +2,7 @@
 
 - On startup, enter field dimensions and mine probability.
 - Open cell by entering x, y and mode. The mode can be **o** - open or **f** - flag
+- If you "open" cell that was already opened, it will open all it's neighbour cells that are not flagged. ("middle clicking" on a cell)
 
 ![](https://i.imgur.com/syudTPM.png)
 

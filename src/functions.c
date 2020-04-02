@@ -23,7 +23,7 @@
  * @param rows Number of rows
  * @param cols Number of columns
  * @param mine_probability Probability of a cell to be a mine
- * @return Minefiled board
+ * @return Minefield board
  */
 minefield* create_field(int rows, int cols, int mine_probability) {
 	int i, j;
@@ -64,7 +64,7 @@ minefield* create_field(int rows, int cols, int mine_probability) {
 /**
  * Prints the minefield board.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  */
 void print_field(minefield* field) {
 	int i, j;
@@ -161,7 +161,7 @@ void print_cell(cell cell) {
 /**
  * Interact with the cell depending on mode.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  * @param x The x position (from 0)
  * @param y The y position (from 0)
  * @param mode Interaction mode; o - open; f - flag
@@ -181,7 +181,7 @@ int inter_cell(minefield* field, int x, int y, char mode) {
  * Opens the cell at (x, y).
  * If the cell is 0, it will open all neighbour zeros.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  * @param x The x position (from 0)
  * @param y The y position (from 0)
  * @return 1 - if the cell is a mine; 0 - if the cell is not a mine
@@ -191,6 +191,11 @@ int open_cell(minefield* field, int x, int y) {
 
 	if (field->cells[index].is_flag == 1) {
 		return 0;
+	}
+
+	// if cell is already open, open all it's neighbours
+	if (field->cells[index].is_open == 1) {
+		return open_neighbours(field, x, y);
 	}
 
 	field->cells[index].is_open = 1;
@@ -205,7 +210,7 @@ int open_cell(minefield* field, int x, int y) {
  * Toggles flag on cell at (x, y).
  * The player cannot toggle flag if the cell is open.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  * @param x The x position (from 0)
  * @param y The y position (from 0)
  */
@@ -229,7 +234,7 @@ void flag_cell(minefield* field, int x, int y) {
  * If the cell is not 0, it will open it as well.
  * Recursive.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  * @param x The x position (from 0)
  * @param y The y position (from 0)
  */
@@ -250,9 +255,43 @@ void open_zeros(minefield* field, int x, int y) {
 }
 
 /**
+ * Opens all neighbour cells from (x, y).
+ * If the cell is a flag, it will not open it.
+ *
+ * @param field Minefield board
+ * @param x The x position (from 0)
+ * @param y The y position (from 0)
+ * @return 1 - if any neighbour cell is a mine
+ */
+int open_neighbours(minefield* field, int x, int y) {
+	int i, j;
+	int index = get_index(field, x, y);
+
+	for (i = x - 1; i <= x + 1; i++) {
+		for (j = y - 1; j <= y + 1; j++) {
+			int neig_index = get_index(field, i, j);
+			if (neig_index != -1 && neig_index != index) {
+				if (field->cells[neig_index].is_open == 0 && field->cells[neig_index].is_flag == 0) {
+					if (field->cells[neig_index].is_mine == 1) {
+						return 1;
+					}
+
+					field->cells[neig_index].is_open = 1;
+					// if cell is 0, open neighbour cells
+					if (field->cells[neig_index].neig_mines == 0) {
+						open_zeros(field, i, j);
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+/**
  * Opens all cells in the minefield.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  */
 void open_all(minefield* field) {
 	int i, j;
@@ -268,7 +307,7 @@ void open_all(minefield* field) {
 /**
  * Opens all mine cells.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  */
 void open_all_mines(minefield* field) {
 	int i, j;
@@ -286,7 +325,7 @@ void open_all_mines(minefield* field) {
 /**
  * Checks if the player won the game.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  * @return 1 - if there is no un-opened non-mine cells
  */
 int check_win(minefield* field) {
@@ -305,18 +344,18 @@ int check_win(minefield* field) {
 
 /**
  * Returns an index of the cell in the minefield cell array.
- * Returns -1 if posiotion was out of bounds. 
+ * Returns -1 if position was out of bounds.
  *
- * @param field Minefiled board
+ * @param field Minefield board
  * @param x The x position (from 0)
  * @param y The y position (from 0)
  * @return the index in array; -1 - if the position was out of bounds
  */
-int get_index(minefield* field, int row, int col) {
-	if (row < 0 || row >= field->rows || col < 0 || col >= field->cols) {
+int get_index(minefield* field, int x, int y) {
+	if (x < 0 || x >= field->rows || y < 0 || y >= field->cols) {
 		return -1;
 	}
-	return row * field->cols + col;
+	return x * field->cols + y;
 }
 
 /**
