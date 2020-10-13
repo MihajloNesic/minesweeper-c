@@ -17,3 +17,7 @@ Works on Linux
 ![](https://i.imgur.com/ZBYuCIa.png)
 
 ![](https://i.imgur.com/QIO48du.png)
+
+And MacOS
+
+![](https://i.imgur.com/Z4BZ8HZ.png)
